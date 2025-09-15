@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chronos-scheduler
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chronos-scheduler
+  template:
+    metadata:
+      labels:
+        app: chronos-scheduler
+    spec:
+      serviceAccountName: scheduler
+      containers:
+        - name: chronos
+          image: chrissilver/chronos:latest
+          imagePullPolicy: Always

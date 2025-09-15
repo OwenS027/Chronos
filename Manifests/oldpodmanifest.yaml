@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pod-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-a
+  namespace: pod-test
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: pod-a
+  template:
+    metadata:
+      labels:
+        app: pod-a
+    spec:
+      schedulerName: chronos
+      containers:
+        - name: busybox
+          image: busybox
+          command:
+            - sh
+            - -c
+            - while true; do ping -c 5 pod-b.pod-test.svc.cluster.local; sleep 1; done
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-b
+  namespace: pod-test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-b
+  template:
+    metadata:
+      labels:
+        app: pod-b
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command:
+            - sh
+            - -c
+            - while true; do ping -c 5 pod-b.pod-test.svc.cluster.local; sleep 1; done
+
